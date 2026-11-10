@@ -1,0 +1,17 @@
+{
+  "name": "brewscale",
+  "description": "Development tooling for Brewscale: formatting with Prettier.",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "prettier": "3.9.10",
+    "prettier-plugin-java": "2.11.0"
+  },
+  "engines": {
+    "node": "^26"
+  }
+}

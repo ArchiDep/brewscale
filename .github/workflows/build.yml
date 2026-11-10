@@ -1,0 +1,93 @@
+name: build
+
+on:
+  push:
+    branches:
+      - '**'
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      # https://github.com/actions/checkout
+      - name: Checkout the repository
+        uses: actions/checkout@v7
+
+      # https://github.com/actions/setup-java
+      - name: Install Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: maven
+
+      - name: Run the automated tests and check the code coverage and nullability
+        run: mvn --batch-mode verify -P nullaway
+
+  format:
+    name: format
+    runs-on: ubuntu-latest
+    steps:
+      # https://github.com/actions/checkout
+      - name: Checkout the repository
+        uses: actions/checkout@v7
+
+      # https://github.com/actions/setup-node
+      - name: Install Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .tool-versions
+          cache: npm
+
+      - name: Install Prettier
+        run: npm ci
+
+      - name: Check the formatting
+        run: npm run format:check
+
+  locust:
+    name: locust
+    runs-on: ubuntu-latest
+    steps:
+      # https://github.com/actions/checkout
+      - name: Checkout the repository
+        uses: actions/checkout@v7
+
+      # https://github.com/actions/setup-java
+      - name: Install Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: maven
+
+      # The same version as the exercise, installed the same way.
+      - name: Install Locust
+        run: pipx install locust==2.47.0
+
+      - name: Build the application
+        run: mvn --batch-mode package -DskipTests
+
+      - name: Start the application
+        run: |
+          java -jar target/brewscale.jar > brewscale.log 2>&1 &
+          timeout 30 bash -c 'until curl --silent --fail --output /dev/null http://127.0.0.1:3000/; do sleep 1; done'
+
+      # Locust exits with a non-zero code if any request failed.
+      - name: Run the load test
+        run: |
+          locust --headless --host http://127.0.0.1:3000 \
+            --users 2 --spawn-rate 2 --run-time 10s --only-summary --csv locust
+
+      # A load test that made no request at all would pass.
+      - name: Check that requests were made
+        run: |
+          count="$(python3 -c 'import csv; print(next(row["Request Count"] for row in csv.DictReader(open("locust_stats.csv")) if row["Name"] == "Aggregated"))')"
+          echo "Locust made $count requests"
+          test "$count" -gt 0
+
+      - name: Show the application's logs
+        if: always()
+        run: cat brewscale.log

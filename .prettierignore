@@ -1,0 +1,4 @@
+# https://prettier.io/docs/ignore
+/.venv
+/coverage
+/target

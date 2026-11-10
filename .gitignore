@@ -1,0 +1,7 @@
+# https://git-scm.com/docs/gitignore
+/.venv
+/coverage
+/locust_*.csv
+/node_modules
+__pycache__
+/target
