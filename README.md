@@ -16,12 +16,17 @@ faster, even on a single processor core.
 Brewscale is an example application of the [Media Engineering Architecture &
 Deployment][archidep] course.
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
 - [Requirements](#requirements)
-- [Build the application](#build-the-application)
+- [Initial setup](#initial-setup)
 - [Run the application](#run-the-application)
 - [Configuration](#configuration)
-- [Load testing](#load-testing)
 - [Development](#development)
+- [Load testing](#load-testing)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Requirements
 
@@ -31,7 +36,7 @@ Deployment][archidep] course.
 The build bundles the application's few dependencies into the jar, so it runs
 with Java alone.
 
-## Build the application
+## Initial setup
 
 ```bash
 git clone https://github.com/ArchiDep/brewscale.git
@@ -82,19 +87,6 @@ Further configuration is possible through environment variables:
 An invalid setting stops the application at startup with a message naming the
 setting.
 
-## Load testing
-
-The [`locustfile.py`](locustfile.py) describes a customer for the
-[Locust][locust] load testing tool, who orders a flat white, waits one second,
-and orders again. Run it from the repository's directory with the application
-running:
-
-```bash
-locust --host http://localhost:3000
-```
-
-Then visit http://localhost:8089 to start the load test.
-
 ## Development
 
 The versions of the tools used in development are in
@@ -123,8 +115,38 @@ npm run format
 npm run format:check
 ```
 
+The table of contents of this README is generated with [doctoc][doctoc]:
+
+```bash
+# Update the table of contents.
+npm run doctoc
+
+# Check that the table of contents is up to date without changing any file.
+npm run doctoc:check
+```
+
+Run every check at once, formatting and table of contents:
+
+```bash
+npm run check
+```
+
+## Load testing
+
+The [`locustfile.py`](locustfile.py) describes a customer for the
+[Locust][locust] load testing tool, who orders a flat white, waits one second,
+and orders again. Run it from the repository's directory with the application
+running:
+
+```bash
+locust --host http://localhost:3000
+```
+
+Then visit http://localhost:8089 to start the load test.
+
 [archidep]: https://archidep.ch
 [asdf]: https://asdf-vm.com
+[doctoc]: https://github.com/thlorenz/doctoc
 [jacoco]: https://www.jacoco.org/jacoco/
 [java]: https://openjdk.org
 [locust]: https://locust.io

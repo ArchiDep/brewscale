@@ -1,13 +1,17 @@
 {
   "name": "brewscale",
-  "description": "Development tooling for Brewscale: formatting with Prettier.",
+  "description": "Development tooling for Brewscale: formatting with Prettier, table of contents with doctoc.",
   "license": "MIT",
   "private": true,
   "scripts": {
+    "check": "npm run doctoc:check && npm run format:check",
+    "doctoc": "doctoc --github --notitle README.md && prettier --write README.md",
+    "doctoc:check": "doctoc --github --notitle --dryrun README.md",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
   "devDependencies": {
+    "doctoc": "2.5.0",
     "prettier": "3.9.10",
     "prettier-plugin-java": "2.11.0"
   },

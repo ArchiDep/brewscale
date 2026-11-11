@@ -19,12 +19,21 @@ JAVA := $(if $(JAVA_HOME),$(JAVA_HOME)/bin/java,java)
 
 MVN := mvn --batch-mode
 
-.PHONY: all check clean format format-check locust package verify
+.PHONY: all check clean doctoc doctoc-check format format-check locust package verify
 
 all: check
 
-## Run every check: formatting, build, tests, coverage, nullability, Locust.
-check: format-check verify locust
+## Run every check: table of contents, formatting, build, tests, coverage,
+## nullability, Locust.
+check: doctoc-check format-check verify locust
+
+## Check that the README's table of contents is up to date.
+doctoc-check: node_modules
+	npm run doctoc:check
+
+## Update the README's table of contents with doctoc.
+doctoc: node_modules
+	npm run doctoc
 
 ## Check that every file is formatted with Prettier.
 format-check: node_modules

@@ -26,8 +26,8 @@ jobs:
       - name: Run the automated tests and check the code coverage and nullability
         run: mvn --batch-mode verify -P nullaway
 
-  format:
-    name: format
+  check:
+    name: check
     runs-on: ubuntu-latest
     steps:
       # https://github.com/actions/checkout
@@ -41,10 +41,13 @@ jobs:
           node-version-file: .tool-versions
           cache: npm
 
-      - name: Install Prettier
+      - name: Install dependencies
         run: npm ci
 
-      - name: Check the formatting
+      - name: Check tables of contents
+        run: npm run doctoc:check
+
+      - name: Check source code formatting
         run: npm run format:check
 
   locust:
