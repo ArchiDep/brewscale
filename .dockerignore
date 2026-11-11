@@ -1,0 +1,5 @@
+# https://docs.docker.com/build/concepts/context/#dockerignore-files
+# The build reads the Maven project only.
+*
+!pom.xml
+!src/
