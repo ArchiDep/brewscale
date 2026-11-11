@@ -125,10 +125,10 @@ npm run doctoc
 npm run doctoc:check
 ```
 
-Run every check at once, formatting and table of contents:
+Run every check at once (also requires Locust):
 
 ```bash
-npm run check
+make
 ```
 
 ## Load testing
