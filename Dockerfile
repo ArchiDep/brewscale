@@ -2,7 +2,9 @@
 
 # Build
 # =====
-FROM maven:3.9.12-eclipse-temurin-25 AS build
+# The jar is the same on every architecture, so it is built once, on the
+# builder's own, even for an image of another architecture.
+FROM --platform=$BUILDPLATFORM maven:3.9.12-eclipse-temurin-25 AS build
 
 WORKDIR /build
 
