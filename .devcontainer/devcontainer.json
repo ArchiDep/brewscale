@@ -1,0 +1,23 @@
+// https://containers.dev/implementors/json_reference/
+//
+// A container with Locust, to load test the café without installing Python:
+// open the repository in GitHub Codespaces, which needs nothing on your
+// computer, or in VS Code with the Dev Containers extension, which needs
+// Docker. Then run `locust` in its terminal.
+{
+  "name": "Brewscale",
+  "image": "mcr.microsoft.com/devcontainers/python:3.14",
+
+  // The same version as the exercise, the Makefile and the build workflow.
+  // pipx puts the locust command on the PATH; pip would install it into
+  // ~/.local/bin, which is not.
+  "postCreateCommand": "pipx install locust==2.47.0",
+
+  "forwardPorts": [8089],
+  "portsAttributes": {
+    "8089": {
+      "label": "Locust",
+      "onAutoForward": "openBrowser"
+    }
+  }
+}
