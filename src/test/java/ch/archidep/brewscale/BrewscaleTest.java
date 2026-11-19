@@ -21,14 +21,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
+import sun.misc.Signal;
 
 class BrewscaleTest {
 
   private final ByteArrayOutputStream out = new ByteArrayOutputStream();
   private final ByteArrayOutputStream err = new ByteArrayOutputStream();
   private final List<Integer> exits = new ArrayList<>();
+  private final List<Runnable> stops = new ArrayList<>();
 
   @Test
   void opensTheCafe() {
@@ -58,6 +61,10 @@ class BrewscaleTest {
       );
       assertThat(err.toString(StandardCharsets.UTF_8), is(emptyString()));
       assertThat(exits, is(equalTo(emptyList())));
+      assertThat(stops.size(), is(equalTo(1)));
+
+      stops.get(0).run();
+      assertThat(exits, contains(0));
     } finally {
       cafe.ifPresent(Cafe::close);
     }
@@ -78,6 +85,20 @@ class BrewscaleTest {
       )
     );
     assertThat(exits, contains(1));
+    assertThat(stops, is(equalTo(emptyList())));
+  }
+
+  @Test
+  void runsAnActionOnSigterm() throws InterruptedException {
+    var received = new CountDownLatch(1);
+    var previous = Brewscale.onSigterm(received::countDown);
+
+    try {
+      Signal.raise(new Signal("TERM"));
+      assertThat(received.await(30, TimeUnit.SECONDS), is(true));
+    } finally {
+      Signal.handle(new Signal("TERM"), previous);
+    }
   }
 
   /**
@@ -133,8 +154,7 @@ class BrewscaleTest {
 
       process.destroy();
       assertThat(process.waitFor(30, TimeUnit.SECONDS), is(true));
-      // 128 + 15, the number of SIGTERM.
-      assertThat(process.exitValue(), is(equalTo(143)));
+      assertThat(process.exitValue(), is(equalTo(0)));
     } finally {
       process.destroyForcibly();
     }
@@ -154,7 +174,8 @@ class BrewscaleTest {
       env,
       new PrintStream(out, true, StandardCharsets.UTF_8),
       new PrintStream(err, true, StandardCharsets.UTF_8),
-      exits::add
+      exits::add,
+      stops::add
     );
   }
 }
